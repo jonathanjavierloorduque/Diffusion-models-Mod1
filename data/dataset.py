@@ -16,11 +16,12 @@ IMG_EXTENSIONS = [
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
 
+imagespath =[]
 def make_dataset(dir):
     if os.path.isfile(dir):
         images = [i for i in np.genfromtxt(dir, dtype=np.str, encoding='utf-8')]
         ####### 1. nose path #######
-        imagespath =[]
+        
         for i in images:
             dir = i.split("/")[0]
             imagespath.append(dir)
@@ -93,7 +94,7 @@ class InpaintDataset(data.Dataset):
             mp_drawing = mp.solutions.drawing_utils
             ############# 2. nose #############
             for i in imagespath:
-                image = cv2.imread(imagesphat[i])
+                image = cv2.imread(imagespath[i])
                 with mp_face_mesh.FaceMesh(
                     static_image_mode=True,
                     max_num_faces=1,
@@ -108,12 +109,12 @@ class InpaintDataset(data.Dataset):
                     print("Face landmarks:",results.multi_face_landmarks)
                     # Draw the face mesh on the image
                     if results.multi_face_landmarks is not None:
-                    for face_landmarks in results.multi_face_landmarks:
-                        #mp_drawing.draw_landmarks(image,face_landmarks)
-                        #print(int(face_landmarks.landmark[4].x*width))
-                        #print(int(face_landmarks.landmark[4].y*width))
-                        x=int(face_landmarks.landmark[164].x*width)
-                        y=int(face_landmarks.landmark[164].y*width)
+                        for face_landmarks in results.multi_face_landmarks:
+                            #mp_drawing.draw_landmarks(image,face_landmarks)
+                            #print(int(face_landmarks.landmark[4].x*width))
+                            #print(int(face_landmarks.landmark[4].y*width))
+                            x=int(face_landmarks.landmark[164].x*width)
+                            y=int(face_landmarks.landmark[164].y*width)
                 h, w = self.image_size
                 mask = bbox2mask(self.image_size, (x, y, h//2, w//2))
             return mask
