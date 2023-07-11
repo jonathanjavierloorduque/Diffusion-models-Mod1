@@ -19,6 +19,12 @@ def is_image_file(filename):
 def make_dataset(dir):
     if os.path.isfile(dir):
         images = [i for i in np.genfromtxt(dir, dtype=np.str, encoding='utf-8')]
+        ####### 1. nose path #######
+        imagespath =[]
+        for i in images:
+            dir = i.split("/")[0]
+            imagespath.append(dir)
+        return imagespath
     else:
         images = []
         assert os.path.isdir(dir), '%s is not a valid directory' % dir
@@ -85,30 +91,32 @@ class InpaintDataset(data.Dataset):
         elif self.mask_mode == 'nose':
             mp_face_mesh = mp.solutions.face_mesh
             mp_drawing = mp.solutions.drawing_utils
-            images = [i for i in np.genfromtxt(dir, dtype=np.str, encoding='utf-8')]
-            image = cv2.imread(images)
-            with mp_face_mesh.FaceMesh(
-                static_image_mode=True,
-                max_num_faces=1,
-                min_detection_confidence=0.5) as face_mesh:
+            ############# 2. nose #############
+            for i in imagespath:
+                image = cv2.imread(imagesphat[i])
+                with mp_face_mesh.FaceMesh(
+                    static_image_mode=True,
+                    max_num_faces=1,
+                    min_detection_confidence=0.5) as face_mesh:
 
-                # Process the image
-                results = face_mesh.process(image)
-                height, width,_ = image.shape
-                image_rgb=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
-                results=face_mesh.process(image_rgb)
+                    # Process the image
+                    results = face_mesh.process(image)
+                    height, width,_ = image.shape
+                    image_rgb=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
+                    results=face_mesh.process(image_rgb)
 
-                print("Face landmarks:",results.multi_face_landmarks)
-                # Draw the face mesh on the image
-                if results.multi_face_landmarks is not None:
-                  for face_landmarks in results.multi_face_landmarks:
-                    #mp_drawing.draw_landmarks(image,face_landmarks)
-                    #print(int(face_landmarks.landmark[4].x*width))
-                    #print(int(face_landmarks.landmark[4].y*width))
-                    x=int(face_landmarks.landmark[164].x*width)
-                    y=int(face_landmarks.landmark[164].y*width)
-            h, w = self.image_size
-            mask = bbox2mask(self.image_size, (x, y, h//2, w//2))
+                    print("Face landmarks:",results.multi_face_landmarks)
+                    # Draw the face mesh on the image
+                    if results.multi_face_landmarks is not None:
+                    for face_landmarks in results.multi_face_landmarks:
+                        #mp_drawing.draw_landmarks(image,face_landmarks)
+                        #print(int(face_landmarks.landmark[4].x*width))
+                        #print(int(face_landmarks.landmark[4].y*width))
+                        x=int(face_landmarks.landmark[164].x*width)
+                        y=int(face_landmarks.landmark[164].y*width)
+                h, w = self.image_size
+                mask = bbox2mask(self.image_size, (x, y, h//2, w//2))
+            return mask
         elif self.mask_mode == 'file':
             pass
         else:
