@@ -85,6 +85,8 @@ class InpaintDataset(data.Dataset):
         elif self.mask_mode == 'nose':
             mp_face_mesh = mp.solutions.face_mesh
             mp_drawing = mp.solutions.drawing_utils
+            images = [i for i in np.genfromtxt(dir, dtype=np.str, encoding='utf-8')]
+            image = cv2.imread(images)
             with mp_face_mesh.FaceMesh(
                 static_image_mode=True,
                 max_num_faces=1,
