@@ -5,6 +5,7 @@ import os
 import torch
 import numpy as np
 import mediapipe as mp
+import cv2
 
 from .util.mask import (bbox2mask, brush_stroke_mask, get_irregular_mask, random_bbox, random_cropping_bbox)
 
@@ -109,35 +110,37 @@ class InpaintDataset(data.Dataset):
             irregular_mask = brush_stroke_mask(self.image_size, )
             mask = regular_mask | irregular_mask
         elif self.mask_mode == 'nose':
-            mp_face_mesh = mp.solutions.face_mesh
-            mp_drawing = mp.solutions.drawing_utils
-            ############# 2. nose #############
-            for i in imagespath:
-                print(imagespath[i])
-                image = cv2.imread(imagespath[i])
+            #h, w = self.image_size
+            #print(f"El hp de Jonathan implemento mal, pero ya le arregle {len(self.imgs)}")
+            for i in self.imgs:
+                print(i)
+                mp_face_mesh = mp.solutions.face_mesh
+                mp_drawing = mp.solutions.drawing_utils
+                image = cv2.imread(i)
                 with mp_face_mesh.FaceMesh(
                     static_image_mode=True,
                     max_num_faces=1,
-                    min_detection_confidence=0.5) as face_mesh:
-
+                    min_detection_confidence=0.5) as face_mesh: 
                     # Process the image
                     results = face_mesh.process(image)
-                    height, width,_ = image.shape
+                    h, w = self.image_size
                     image_rgb=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
-                    results=face_mesh.process(image_rgb)
-
-                    print("Face landmarks:",results.multi_face_landmarks)
+                    results=face_mesh.process(image_rgb)    
+                    #print("Face landmarks:",results.multi_face_landmarks)
                     # Draw the face mesh on the image
-                    if results.multi_face_landmarks is not None:
-
+                    if results.multi_face_landmarks is not None:    
                         for face_landmarks in results.multi_face_landmarks:
                             #mp_drawing.draw_landmarks(image,face_landmarks)
                             #print(int(face_landmarks.landmark[4].x*width))
                             #print(int(face_landmarks.landmark[4].y*width))
-                            x=int(face_landmarks.landmark[164].x*width)
-                            y=int(face_landmarks.landmark[164].y*width)
-                h, w = self.image_size
-            mask = bbox2mask(self.image_size, (x, y, h//2, w//2))
+                            x=int(face_landmarks.landmark[98].x*w)
+                            y=int(face_landmarks.landmark[98].y*w)
+                            print(x)
+                            print(y)
+                            time.sleep(3)
+                            h, w = self.image_size
+                            mask = bbox2mask(self.image_size, (x, y, h//6, w//8))
+            #mask = bbox2mask(self.image_size, (h//4, w//4, h//2, w//2))
             
         elif self.mask_mode == 'file':
             pass
