@@ -79,6 +79,8 @@ class InpaintDataset(data.Dataset):
             #print(f"El hp de Jonathan implemento mal, pero ya le arregle {len(self.imgs)}")
             for i in self.imgs:
                 print(i)
+                mp_face_mesh = mp.solutions.face_mesh
+                mp_drawing = mp.solutions.drawing_utils
                 image = cv2.imread(i)
                 with mp_face_mesh.FaceMesh(
                     static_image_mode=True,
