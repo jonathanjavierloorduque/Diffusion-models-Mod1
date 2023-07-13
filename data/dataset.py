@@ -16,16 +16,11 @@ IMG_EXTENSIONS = [
 def is_image_file(filename):
     return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
 
-imagespath =[]
+
 def make_dataset(dir):
     if os.path.isfile(dir):
         images = [i for i in np.genfromtxt(dir, dtype=np.str, encoding='utf-8')]
         ####### 1. nose path #######
-        
-        for i in images:
-            dir = i.split("/")[0]
-            imagespath.append(dir)
-        return imagespath
     else:
         images = []
         assert os.path.isdir(dir), '%s is not a valid directory' % dir
@@ -80,7 +75,31 @@ class InpaintDataset(data.Dataset):
             mask = bbox2mask(self.image_size, random_bbox())
         elif self.mask_mode == 'center':
             h, w = self.image_size
-            mask = bbox2mask(self.image_size, (h//4, w//4, h//2, w//2))
+            #print(f"El hp de Jonathan implemento mal, pero ya le arregle {len(self.imgs)}")
+            for i in self.imgs:
+                print(i)
+                image = cv2.imread(i)
+                with mp_face_mesh.FaceMesh(
+                    static_image_mode=True,
+                    max_num_faces=1,
+                    min_detection_confidence=0.5) as face_mesh: 
+                    # Process the image
+                    results = face_mesh.process(image)
+                    height, width,_ = image.shape
+                    image_rgb=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
+                    results=face_mesh.process(image_rgb)    
+                    print("Face landmarks:",results.multi_face_landmarks)
+                    # Draw the face mesh on the image
+                    if results.multi_face_landmarks is not None:    
+                        for face_landmarks in results.multi_face_landmarks:
+                            #mp_drawing.draw_landmarks(image,face_landmarks)
+                            #print(int(face_landmarks.landmark[4].x*width))
+                            #print(int(face_landmarks.landmark[4].y*width))
+                            x=int(face_landmarks.landmark[164].x*width)
+                            y=int(face_landmarks.landmark[164].y*width)
+                h, w = self.image_size
+            mask = bbox2mask(self.image_size, (x, y, h//2, w//2))
+            #mask = bbox2mask(self.image_size, (h//4, w//4, h//2, w//2))
         elif self.mask_mode == 'irregular':
             mask = get_irregular_mask(self.image_size)
         elif self.mask_mode == 'free_form':
@@ -94,6 +113,7 @@ class InpaintDataset(data.Dataset):
             mp_drawing = mp.solutions.drawing_utils
             ############# 2. nose #############
             for i in imagespath:
+                print(imagespath[i])
                 image = cv2.imread(imagespath[i])
                 with mp_face_mesh.FaceMesh(
                     static_image_mode=True,
@@ -109,6 +129,7 @@ class InpaintDataset(data.Dataset):
                     print("Face landmarks:",results.multi_face_landmarks)
                     # Draw the face mesh on the image
                     if results.multi_face_landmarks is not None:
+
                         for face_landmarks in results.multi_face_landmarks:
                             #mp_drawing.draw_landmarks(image,face_landmarks)
                             #print(int(face_landmarks.landmark[4].x*width))
@@ -116,8 +137,8 @@ class InpaintDataset(data.Dataset):
                             x=int(face_landmarks.landmark[164].x*width)
                             y=int(face_landmarks.landmark[164].y*width)
                 h, w = self.image_size
-                mask = bbox2mask(self.image_size, (x, y, h//2, w//2))
-            return mask
+            mask = bbox2mask(self.image_size, (x, y, h//2, w//2))
+            
         elif self.mask_mode == 'file':
             pass
         else:
