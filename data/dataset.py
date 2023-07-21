@@ -100,8 +100,8 @@ class InpaintDataset(data.Dataset):
                             #print(int(face_landmarks.landmark[4].y*width))
                             x=int(face_landmarks.landmark[164].x*width)
                             y=int(face_landmarks.landmark[164].y*width)
-                h, w = self.image_size
-            mask = bbox2mask(self.image_size, (x, y, h//2, w//2))
+                            h, w = self.image_size
+                            mask = bbox2mask(self.image_size, (h//4, w//6, x, y))
             #mask = bbox2mask(self.image_size, (h//4, w//4, h//2, w//2))
         elif self.mask_mode == 'irregular':
             mask = get_irregular_mask(self.image_size)
