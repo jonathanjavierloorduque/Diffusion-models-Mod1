@@ -113,8 +113,9 @@ class InpaintDataset(data.Dataset):
             irregular_mask = brush_stroke_mask(self.image_size, )
             mask = regular_mask | irregular_mask
         elif self.mask_mode == 'nose':
-            #h, w = self.image_size
-            #print(f"El hp de Jonathan implemento mal, pero ya le arregle {len(self.imgs)}")
+            h, w = self.image_size
+            #print(f"ya le arregle {len(self.imgs)}")
+            array_pointsf=[] 
             for i in self.imgs:
                 print(i)
                 mp_face_mesh = mp.solutions.face_mesh
@@ -126,23 +127,29 @@ class InpaintDataset(data.Dataset):
                     min_detection_confidence=0.5) as face_mesh: 
                     # Process the image
                     results = face_mesh.process(image)
-                    h, w = self.image_size
+                    height, width,_ = image.shape
                     image_rgb=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
                     results=face_mesh.process(image_rgb)    
                     #print("Face landmarks:",results.multi_face_landmarks)
                     # Draw the face mesh on the image
-                    if results.multi_face_landmarks is not None:    
+                    if results.multi_face_landmarks is not None:
+                        
                         for face_landmarks in results.multi_face_landmarks:
                             #mp_drawing.draw_landmarks(image,face_landmarks)
                             #print(int(face_landmarks.landmark[4].x*width))
                             #print(int(face_landmarks.landmark[4].y*width))
-                            x=int(face_landmarks.landmark[98].x*w)
-                            y=int(face_landmarks.landmark[98].y*w)
-                            print(x)
-                            print(y)
-                            time.sleep(3)
+                            x=int(face_landmarks.landmark[221].x*width)
+                            y=int(face_landmarks.landmark[221].y*height)
                             h, w = self.image_size
-                            mask = bbox2mask(self.image_size, (x, y, h//6, w//8))
+                            print(x,y)
+                            array_pointsf.append((x,y))
+            print(array_pointsf)
+            for i in range(len(array_pointsf)):
+              x=array_pointsf[i][0]
+              print("X es=",x)
+              y=array_pointsf[i][1]
+              print("Y es=",y )
+              mask = bbox2mask(self.image_size, (y,x, h//7, w//9))
             #mask = bbox2mask(self.image_size, (h//4, w//4, h//2, w//2))
             
         elif self.mask_mode == 'file':
