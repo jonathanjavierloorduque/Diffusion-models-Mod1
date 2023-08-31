@@ -151,7 +151,41 @@ class InpaintDataset(data.Dataset):
               print("Y es=",y )
               mask = bbox2mask(self.image_size, (y,x, h//7, w//9))
             #mask = bbox2mask(self.image_size, (h//4, w//4, h//2, w//2))
-            
+        elif self.mask_mode == 'nosegreek':
+            h, w = self.image_size
+            #print(f"ya le arregle {len(self.imgs)}")
+            array_pointsf=[] 
+            for i in self.imgs:
+                print(i)
+                mp_face_detection = mp.solutions.face_detection
+                mp_drawing = mp.solutions.drawing_utils
+                image = cv2.imread(i)
+                with mp_face_detection.FaceDetection(
+                    min_detection_confidence= 0.5) as face_detection:
+                    height,width,_ = image.shape
+                    image_rgb = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
+                    results= face_detection.process(image_rgb)
+                
+                    if  results.detections is not None:
+                        for detection in results.detections:
+                          
+                          #Ojo Derecho
+                          X_RE= int(detection.location_data.relative_keypoints[0].x*width)
+                          Y_RE= int(detection.location_data.relative_keypoints[0].y*height)
+                        
+                          # Ojo izquierdo
+                          X_LE= int(detection.location_data.relative_keypoints[1].x*width)
+                          Y_LE= int(detection.location_data.relative_keypoints[1].y*height)
+                          #nose
+                          X_NO= int(detection.location_data.relative_keypoints[2].x*width)
+                          Y_NO= int(detection.location_data.relative_keypoints[2].y*height)
+                          diff=(X_LE-X_NO)
+                          h, w = self.image_size
+                          print("La diferencia es",diff)
+                          if diff >= 0:
+                            mask = bbox2mask(self.image_size, (Y_NO-25,X_NO-13, h//7, w//9))
+                          else:
+                            mask = bbox2mask(self.image_size, (Y_LE-5,X_LE+8, h//7, w//9))            
         elif self.mask_mode == 'file':
             pass
         else:
