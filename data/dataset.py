@@ -183,11 +183,11 @@ class InpaintDataset(data.Dataset):
                           h, w = self.image_size
                           print("La diferencia es",diff)
                           if diff >= 0:
-                            #mask = bbox2mask(self.image_size, (Y_NO-25,X_NO-13, h//7, w//9))
-                            mask = bbox2mask(self.image_size, (Y_RE+2,23, 255//8+9, 255-50))
+                            mask = bbox2mask(self.image_size, (Y_NO-25,X_NO-13, h//7, w//2))
+                            #mask = bbox2mask(self.image_size, (Y_RE+2,23, 255//8+9, 255-50))
                           else:
-                            #mask = bbox2mask(self.image_size, (Y_LE-5,X_LE+8, h//7, w//9))
-                            mask = bbox2mask(self.image_size, (Y_RE+2,23, 255//8+9, 255-50))            
+                            mask = bbox2mask(self.image_size, (Y_LE-5,X_LE+4, h//7, w//2))
+                            #mask = bbox2mask(self.image_size, (Y_RE+2,23, 255//8+9, 255-50))            
         elif self.mask_mode == 'file':
             pass
         else:
