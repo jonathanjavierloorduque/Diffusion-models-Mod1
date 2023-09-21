@@ -181,14 +181,19 @@ class InpaintDataset(data.Dataset):
                           Y_NO= int(detection.location_data.relative_keypoints[2].y*height)
                           diff=(X_LE-X_NO)
                           h, w = self.image_size
-                          print("La diferencia es",diff)
+                          print("La diferencia es entre el ojo izquierzo y la nariz en el eje de las x es",diff)
+                          #variable mask width
+                          NEW= abs(Y_RE-Y_NO)
+                          print("NEW es el ancho de la mascara",NEW)
                           if diff >= 0:
-                            mask = bbox2mask(self.image_size, (Y_NO-18,X_NO-12, h//10, w//2))
+                            mask = bbox2mask(self.image_size, (Y_LE+1,X_NO-12,NEW+2, w//2))
+                            #mask = bbox2mask(self.image_size, (Y_NO-18,X_NO-12, h//10, w//2))
                             #mask = bbox2mask(self.image_size, (Y_NO-15,X_NO-12, h//10, w//2))
                             #mask = bbox2mask(self.image_size, (Y_NO-25,X_NO-13, h//7, w//2))
                             #mask = bbox2mask(self.image_size, (Y_RE+2,23, 255//8+9, 255-50))
                           else:
-                            mask = bbox2mask(self.image_size, (Y_LE,X_LE+4, h//10, w//2))
+                            mask = bbox2mask(self.image_size, (Y_LE+1,X_LE+4,NEW+3, w//2))
+                            #mask = bbox2mask(self.image_size, (Y_LE,X_LE+4, h//10, w//2))
                             #mask = bbox2mask(self.image_size, (Y_LE+2,X_LE+4, h//10, w//2))
                             #mask = bbox2mask(self.image_size, (Y_LE-5,X_LE+4, h//7, w//2))
                             #mask = bbox2mask(self.image_size, (Y_RE+2,23, 255//8+9, 255-50))            
