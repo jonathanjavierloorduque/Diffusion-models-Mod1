@@ -192,7 +192,7 @@ class InpaintDataset(data.Dataset):
                             #mask = bbox2mask(self.image_size, (Y_NO-25,X_NO-13, h//7, w//2))
                             #mask = bbox2mask(self.image_size, (Y_RE+2,23, 255//8+9, 255-50))
                           else:
-                            mask = bbox2mask(self.image_size, (Y_LE+1,X_LE+4,NEW+3, w//2))
+                            mask = bbox2mask(self.image_size, (Y_LE+1,X_LE+4,NEW+1, w//2))
                             #mask = bbox2mask(self.image_size, (Y_LE,X_LE+4, h//10, w//2))
                             #mask = bbox2mask(self.image_size, (Y_LE+2,X_LE+4, h//10, w//2))
                             #mask = bbox2mask(self.image_size, (Y_LE-5,X_LE+4, h//7, w//2))
