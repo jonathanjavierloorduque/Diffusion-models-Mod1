@@ -191,7 +191,7 @@ class InpaintDataset(data.Dataset):
                                 mask = bbox2mask(self.image_size, (Y_LE + 1, X_NO - 12, NEW + 1, w // 2))
                             else:
                                 # Haz algo si NEW es menor o igual que 10
-                                mask = bbox2mask(self.image_size, (Y_LE + 1, X_NO - 12, h//10, w // 2))
+                                mask = bbox2mask(self.image_size, (Y_LE -3, X_NO - 14, h//10, w // 2))
                             
                             #mask = bbox2mask(self.image_size, (Y_LE+1,X_NO-12,NEW+1, w//2))
                             #mask = bbox2mask(self.image_size, (Y_NO-18,X_NO-12, h//10, w//2))
