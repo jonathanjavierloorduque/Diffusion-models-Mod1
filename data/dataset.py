@@ -186,7 +186,14 @@ class InpaintDataset(data.Dataset):
                           NEW= abs(Y_RE-Y_NO)
                           print("NEW es el ancho de la mascara",NEW)
                           if diff >= 0:
-                            mask = bbox2mask(self.image_size, (Y_LE+1,X_NO-12,NEW+1, w//2))
+                            if NEW >= 15:  # Agregar una nueva condición basada en NEW
+                                # Haz algo si NEW es mayor que 10
+                                mask = bbox2mask(self.image_size, (Y_LE + 1, X_NO - 12, NEW + 1, w // 2))
+                            else:
+                                # Haz algo si NEW es menor o igual que 10
+                                mask = bbox2mask(self.image_size, (Y_LE + 1, X_NO - 12, h//10, w // 2))
+                            
+                            #mask = bbox2mask(self.image_size, (Y_LE+1,X_NO-12,NEW+1, w//2))
                             #mask = bbox2mask(self.image_size, (Y_NO-18,X_NO-12, h//10, w//2))
                             #mask = bbox2mask(self.image_size, (Y_NO-15,X_NO-12, h//10, w//2))
                             #mask = bbox2mask(self.image_size, (Y_NO-25,X_NO-13, h//7, w//2))
